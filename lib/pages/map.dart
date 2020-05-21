@@ -1,4 +1,6 @@
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,10 +14,32 @@ class _MapsState extends State<Maps> {
 
   LatLng posicion = LatLng(-16.398584,-71.536896);
   MapType  mapType = MapType.normal;
+  BitmapDescriptor iconOwn;
+  
+  //para que las imagenes carge antes de todo
+   @override
+   void initState(){
 
+    getIcons();
+   }
+
+   getIcons()async{
+
+     var icons = await BitmapDescriptor.fromAssetImage(
+       ImageConfiguration(devicePixelRatio: 2.0),
+       'assets/img/driving-pin.png');
+       
+       //actualizar el icono
+       setState(() {
+         iconOwn =icons;
+       });
+   }
   //-16.398584, -71.536896
+
   @override
   Widget build(BuildContext context) {
+
+    //BitmapDescriptor icono = BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),"assets/img/driving-pin.png");
     return Scaffold(
       appBar: AppBar(
         title: Text("Google Maps"),
@@ -37,7 +61,10 @@ class _MapsState extends State<Maps> {
                  anchor: const Offset(0.2, 0.2), 
                  draggable: true, //puede mover el marcador,
                  onDragEnd: _onDragEnd, //devuelve una nueva posicion
-                 zIndex: 1
+                 zIndex: 1,
+                 //icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta)
+                 //icon: iconOwn,
+                 icon:BitmapDescriptor.fromAsset("assets/img/driving-pin.png")
               ),
 
               Marker( 
@@ -48,7 +75,9 @@ class _MapsState extends State<Maps> {
                  anchor: const Offset(0.2, 0.2), 
                  draggable: true, //puede mover el marcador,
                  onDragEnd: _onDragEnd, //devuelve una nueva posicion
-                 zIndex: 2
+                 zIndex: 2,
+                 icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose)
+                // icon: iconOwn
               ),
                  
              },
