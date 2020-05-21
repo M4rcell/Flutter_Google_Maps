@@ -26,9 +26,32 @@ class _MapsState extends State<Maps> {
           GoogleMap(
             initialCameraPosition: CameraPosition(
               target:posicion,
-              zoom: 13       
+              zoom: 15       
             ),
              mapType:mapType,
+             markers: {
+               Marker( 
+                 markerId: MarkerId(posicion.toString()),
+                 position: posicion,
+                 alpha: 0.7,//opacidad dee marcador
+                 anchor: const Offset(0.2, 0.2), 
+                 draggable: true, //puede mover el marcador,
+                 onDragEnd: _onDragEnd, //devuelve una nueva posicion
+                 zIndex: 1
+              ),
+
+              Marker( 
+                
+                 markerId: MarkerId(posicion.toString()),
+                 position: LatLng(-16.388409958978677, -71.54798112809658),
+                 alpha: 0.7,//opacidad dee marcador
+                 anchor: const Offset(0.2, 0.2), 
+                 draggable: true, //puede mover el marcador,
+                 onDragEnd: _onDragEnd, //devuelve una nueva posicion
+                 zIndex: 2
+              ),
+                 
+             },
           ),
            
          _speedDial(),
@@ -76,5 +99,11 @@ class _MapsState extends State<Maps> {
             ],
           ),
     );
+  }
+
+  _onDragEnd(LatLng posicion){
+
+    print("New Posicion : $posicion");
+
   }
 }
