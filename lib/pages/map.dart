@@ -101,6 +101,16 @@ class _MapsState extends State<Maps> {
         children: <Widget>[
 
           GoogleMap(
+            //desahabilitar propiedades como inclinacion ,Scrool , zoom
+            /* rotateGesturesEnabled: ,
+            scrollGesturesEnabled: ,
+            zoomGesturesEnabled: ,
+            tiltGesturesEnabled: , */
+
+            compassEnabled: false,//Brujula
+            mapToolbarEnabled: false,//barra de herramientas
+            trafficEnabled: true, //trafico
+            buildingsEnabled: true,//ver edificios en 3D
             initialCameraPosition: CameraPosition(
               target:posicion,
               zoom: 15,    
