@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:google_maps/pages/MarkerInformation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Maps extends StatefulWidget {
@@ -15,6 +16,7 @@ class _MapsState extends State<Maps> {
   LatLng posicion = LatLng(-16.398584,-71.536896);
   MapType  mapType = MapType.normal;
   BitmapDescriptor iconOwn;
+  bool isShowInfo=false;
   
   //para que las imagenes carge antes de todo
    @override
@@ -63,8 +65,16 @@ class _MapsState extends State<Maps> {
                  onDragEnd: _onDragEnd, //devuelve una nueva posicion
                  zIndex: 1,
                  //icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta)
-                 //icon: iconOwn,
-                 icon:BitmapDescriptor.fromAsset("assets/img/driving-pin.png")
+                 //icon: iconOwn
+                 icon:BitmapDescriptor.fromAsset("assets/img/driving-pin.png"),
+                 onTap: () => setState((){this.isShowInfo =! this.isShowInfo ; }),
+                 /* infoWindow: InfoWindow(
+                   title: "Informacion del Marcador",
+                  // snippet: "Latitud : ${posicion.latitude}  & Longuitud : ${posicion.longitude}"
+                  onTap: (){
+                   
+                  }
+                 ) */
               ),
 
               Marker( 
@@ -84,6 +94,9 @@ class _MapsState extends State<Maps> {
           ),
            
          _speedDial(),
+
+        Visibility(visible:isShowInfo , child: MarkerInformaction( image: "assets/img/cody.jpg", title: "Mi Ubicacion", latLng: this.posicion,))
+
 
         ],
       ),
@@ -126,7 +139,11 @@ class _MapsState extends State<Maps> {
               )
 
             ],
+            
+
           ),
+           
+        
     );
   }
 
