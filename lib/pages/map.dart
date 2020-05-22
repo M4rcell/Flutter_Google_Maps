@@ -16,16 +16,18 @@ class _MapsState extends State<Maps> {
   LatLng posicion = LatLng(-16.398584,-71.536896);
   MapType  mapType = MapType.normal;
   BitmapDescriptor iconOwn;
-  bool isShowInfo=false;
-  
+  bool isShowInfo=true;
+  GoogleMapController controller;
+
   //para que las imagenes carge antes de todo
-   @override
-   void initState(){
-
+  @override
+  void initState() { 
+    super.initState();
     getIcons();
-   }
+  }
+  
 
-   getIcons()async{
+  getIcons()async{
 
      var icons = await BitmapDescriptor.fromAssetImage(
        ImageConfiguration(devicePixelRatio: 2.0),
@@ -37,7 +39,11 @@ class _MapsState extends State<Maps> {
        });
    }
   //-16.398584, -71.536896
+  _onMapCreated(GoogleMapController controller){
 
+    this.controller= controller;
+
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -52,22 +58,59 @@ class _MapsState extends State<Maps> {
           GoogleMap(
             initialCameraPosition: CameraPosition(
               target:posicion,
-              zoom: 15       
+              zoom: 15,    
+              bearing: 90,//orientacion   
+              tilt: 45 //inclinacion
             ),
+            
+            onCameraMoveStarted: ()=>{
+              print("Inicio ")
+            },// Detecta el movimiento de camara
+            onCameraIdle: ()=>{
+              print("Fin")
+            },//Detecta cuando la camara deja de moverse
+            onCameraMove: (CameraPosition cameraPosition)=>{
+             print(" Moviendo ${cameraPosition.target }")
+            },//Detecta ci¿uando la camera se esta moviendo devuelve un valor
+            onMapCreated: _onMapCreated,
+
+
              mapType:mapType,
+            /*  cameraTargetBounds: CameraTargetBounds(LatLngBounds(
+               southwest: null, 
+               northeast: null) 
+             ), */ //para delimitar la mapa
+            // minMaxZoomPreference: MinMaxZoomPreference(1,10),// delimitar el zoom
              markers: {
                Marker( 
                  markerId: MarkerId(posicion.toString()),
                  position: posicion,
-                 alpha: 0.7,//opacidad dee marcador
-                 anchor: const Offset(0.2, 0.2), 
-                 draggable: true, //puede mover el marcador,
-                 onDragEnd: _onDragEnd, //devuelve una nueva posicion
-                 zIndex: 1,
+                 //alpha: 0.7,//opacidad dee marcador
+                // anchor: const Offset(0.2, 0.2), 
+                // draggable: true, //puede mover el marcador,
+                // onDragEnd: _onDragEnd, //devuelve una nueva posicion
+                // zIndex: 1,
                  //icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta)
-                 //icon: iconOwn
+               // icon: iconOwn,
                  icon:BitmapDescriptor.fromAsset("assets/img/driving-pin.png"),
-                 onTap: () => setState((){this.isShowInfo =! this.isShowInfo ; }),
+                 onTap: (){
+
+                   print("Hola Mundo");
+
+                   //isShowInfo =! isShowInfo;
+                    setState(() {
+                      
+                      controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+                        target: LatLng(-16.398584,-71.536896),
+                        zoom: 10
+
+                      )));
+
+                      this.isShowInfo =! this.isShowInfo;
+
+                      }); 
+                   
+                 }
                  /* infoWindow: InfoWindow(
                    title: "Informacion del Marcador",
                   // snippet: "Latitud : ${posicion.latitude}  & Longuitud : ${posicion.longitude}"
