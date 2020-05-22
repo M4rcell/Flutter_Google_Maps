@@ -19,6 +19,8 @@ class _MapsState extends State<Maps> {
   bool isShowInfo=true;
   GoogleMapController controller;
 
+  LatLng latLgnOnLongPres;
+
   //para que las imagenes carge antes de todo
   @override
   void initState() { 
@@ -44,6 +46,49 @@ class _MapsState extends State<Maps> {
     this.controller= controller;
 
   }
+  ontTapMap(LatLng latLng){
+    print("OnTapMap $latLng");
+  }
+  onLongPressMap(LatLng latLng){
+    latLgnOnLongPres=latLng;
+
+    showPopUpMenu() ;
+
+  }
+  showPopUpMenu() async{
+    String selected = await showMenu(
+      context: context, 
+      position: RelativeRect.fromLTRB(200, 200, 250, 250), 
+      items: [
+        PopupMenuItem<String>(
+          child: Text("Que hay Aqui"),
+          value: "QueHay",
+        )
+        ,
+        PopupMenuItem<String>(
+          child: Text("Ir a"),
+          value: "Ir",
+        )
+        ,
+        
+      ]
+       ,
+      elevation: 8.0
+    );
+
+    if (selected !=null) {
+      getValue(selected);
+      
+    }
+
+  }
+
+  getValue(value){
+
+    if (value =="QueHay") {
+      print("Ubicacion $latLgnOnLongPres");
+    }
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -62,6 +107,9 @@ class _MapsState extends State<Maps> {
               bearing: 90,//orientacion   
               tilt: 45 //inclinacion
             ),
+
+            onTap:ontTapMap , //Detecta cuando nostros presiones la mapa
+            onLongPress: onLongPressMap,//Detecta cuando nosotros tardamos en presiones la mapa
             
             onCameraMoveStarted: ()=>{
               print("Inicio ")
