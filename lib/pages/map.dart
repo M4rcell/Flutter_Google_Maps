@@ -13,9 +13,11 @@ class Maps extends StatefulWidget {
   _MapsState createState() => _MapsState();
 }
 
+const DEFAUL_LOCATION = LatLng(-16.398584,-71.536896);
+
 class _MapsState extends State<Maps> {
 
-  LatLng posicion = LatLng(-16.398584,-71.536896);
+  LatLng posicion = DEFAUL_LOCATION;
   MapType  mapType = MapType.normal;
   BitmapDescriptor iconOwn;
   bool isShowInfo=false;
@@ -27,6 +29,8 @@ class _MapsState extends State<Maps> {
   bool  _myLocationEnabled =false;//activado mi localizacion
   bool  _myLocationButtonEnabled= false;// poner visible el boton
 
+  LatLng _curretLocation = DEFAUL_LOCATION;
+
   //para que las imagenes carge antes de todo
   @override
   void initState() { 
@@ -34,6 +38,37 @@ class _MapsState extends State<Maps> {
     getIcons();
     requestPerms();
   }
+  // LOCALIZACION DE USUARIO ACTUAL
+  getLocationUser() async {
+    var _curretLocation = await location.getLocation();
+    updateLocationUser(_curretLocation);
+  }
+
+  updateLocationUser( currentLocation){ //actualizar en real time location users
+    if (currentLocation !=null) {
+      print("Ubicacion actual del Usuario Latitud : ${currentLocation.latitude} Longuitud: ${currentLocation.longitude}");
+      setState(() {
+        this._curretLocation=LatLng(currentLocation.latitude,currentLocation.longitude);
+        this.controller.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target:this._curretLocation ,
+            zoom: 17,
+          )
+        )); //actualizar la camara
+      });
+      
+    }
+  }
+  locationChangedUser(){ //obtener contantemente la ubicacion del usuario
+  
+  location.onLocationChanged.listen((lc.LocationData cloc) { 
+    if (cloc != null) {
+      updateLocationUser(cloc) ;
+    }
+  });
+
+  }
+ // ACTIVAR LOS PERMISOS DE USO GPS
   requestPerms()async{
     Map<Permission,PermissionStatus> statuse = await [Permission.locationAlways].request(); //dentro de [] puedes agregar mas permisos,
 
@@ -59,6 +94,8 @@ class _MapsState extends State<Maps> {
     else{
        print("GPS Activado");
        updateStatus();
+       getLocationUser();
+       locationChangedUser();
     }
   }
 
