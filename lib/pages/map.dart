@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_maps/pages/MarkerInformation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart'as lc;
+import 'package:permission_handler/permission_handler.dart';
 
 class Maps extends StatefulWidget {
   @override
@@ -20,14 +22,41 @@ class _MapsState extends State<Maps> {
   GoogleMapController controller;
 
   LatLng latLgnOnLongPres;
+  lc.Location location;
 
   //para que las imagenes carge antes de todo
   @override
   void initState() { 
     super.initState();
     getIcons();
+    requestPerms();
   }
-  
+  requestPerms()async{
+    Map<Permission,PermissionStatus> statuse = await [Permission.locationAlways].request(); //dentro de [] puedes agregar mas permisos,
+
+     var status = statuse[Permission.locationAlways];
+
+     if (status==PermissionStatus.denied) {
+
+       requestPerms();
+     }
+     else
+     {
+        enableGPS();
+     }
+  }
+  enableGPS()async{
+    location=lc.Location();
+    bool servicesStatusResult = await location.requestService();
+
+    if (!servicesStatusResult) {
+
+      enableGPS();
+    }
+    else{
+       print("GPS Activado");
+    }
+  }
 
   getIcons()async{
 
@@ -107,15 +136,15 @@ class _MapsState extends State<Maps> {
             zoomGesturesEnabled: ,
             tiltGesturesEnabled: , */
 
-            compassEnabled: false,//Brujula
-            mapToolbarEnabled: false,//barra de herramientas
+            compassEnabled: true,//Brujula
+            mapToolbarEnabled: true,//barra de herramientas
             trafficEnabled: true, //trafico
             buildingsEnabled: true,//ver edificios en 3D
             initialCameraPosition: CameraPosition(
               target:posicion,
               zoom: 15,    
               bearing: 90,//orientacion   
-              tilt: 45 //inclinacion
+              tilt:45 //inclinacion
             ),
 
             onTap:ontTapMap , //Detecta cuando nostros presiones la mapa
@@ -208,7 +237,8 @@ class _MapsState extends State<Maps> {
   Widget _speedDial(){
 
     return Container(
-      padding: EdgeInsets.only(bottom: 10.0,right: 10.0),
+     
+      padding: EdgeInsets.only(bottom: 100.0,right: 5.0),
       child: SpeedDial(
             animatedIcon: AnimatedIcons.menu_close,
             overlayColor: Colors.black,
