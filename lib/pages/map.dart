@@ -18,11 +18,14 @@ class _MapsState extends State<Maps> {
   LatLng posicion = LatLng(-16.398584,-71.536896);
   MapType  mapType = MapType.normal;
   BitmapDescriptor iconOwn;
-  bool isShowInfo=true;
+  bool isShowInfo=false;
   GoogleMapController controller;
 
   LatLng latLgnOnLongPres;
   lc.Location location;
+
+  bool  _myLocationEnabled =false;//activado mi localizacion
+  bool  _myLocationButtonEnabled= false;// poner visible el boton
 
   //para que las imagenes carge antes de todo
   @override
@@ -55,7 +58,15 @@ class _MapsState extends State<Maps> {
     }
     else{
        print("GPS Activado");
+       updateStatus();
     }
+  }
+
+  updateStatus(){
+    setState(() {
+        _myLocationEnabled =true;//activado mi localizacion
+        _myLocationButtonEnabled= true;// poner visible el boton
+    });
   }
 
   getIcons()async{
@@ -146,6 +157,9 @@ class _MapsState extends State<Maps> {
               bearing: 90,//orientacion   
               tilt:45 //inclinacion
             ),
+
+            myLocationEnabled: _myLocationEnabled,//activado mi localizacion
+            myLocationButtonEnabled: _myLocationButtonEnabled,// poner visible el boton
 
             onTap:ontTapMap , //Detecta cuando nostros presiones la mapa
             onLongPress: onLongPressMap,//Detecta cuando nosotros tardamos en presiones la mapa
